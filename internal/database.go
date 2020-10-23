@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"github.com/erkrnt/wireguard-manager/api"

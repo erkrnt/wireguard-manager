@@ -1,3 +1,6 @@
+# wireguard-manager
+data.db
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
