@@ -1,18 +1,11 @@
-#![feature(decl_macro, proc_macro_hygiene)]
+use actix_web::{App, HttpServer};
 
-#[cfg(test)] mod tests;
+mod route;
 
-use rocket::{get, routes};
-
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
-}
-
-fn rocket() -> rocket::Rocket {
-    rocket::ignite().mount("/", routes![index])
-}
-
-fn main() {
-    rocket().launch();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(route::index))
+        .bind("127.0.0.1:8000")?
+        .run()
+        .await
 }
