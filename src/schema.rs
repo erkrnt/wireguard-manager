@@ -1,22 +1,27 @@
-struct Interface {
-    ID: String,
-    Address: String,
-    ListenPort: u8,
-    PostUp: String,
-    PostDown: String,
-    SaveConfig: bool,
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct Interface {
+    pub id: String,
+    pub address: String,
+    pub listen_port: u16,
+    pub post_down: String,
+    pub post_up: String,
+    pub save_config: bool,
 }
 
-struct Peer {
-    ID: String,
-    Address: String,
-    InterfaceID: String,
-    PrivateKey: String,
-    PublicKey: String,
-    UserID: String,
+#[derive(Serialize)]
+pub struct Peer {
+    pub id: String,
+    pub address: String,
+    pub interface_id: String,
+    pub private_key: String,
+    pub public_key: String,
+    pub user_id: String,
 }
 
-struct User {
-    ID: String,
-    Name: String,
+#[derive(Serialize)]
+pub struct User {
+    pub id: String,
+    pub name: String,
 }
