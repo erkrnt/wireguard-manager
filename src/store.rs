@@ -5,7 +5,10 @@ use std::fs::create_dir_all;
 use std::sync::{Arc, RwLock};
 
 pub struct State {
+    pub interface: SingleStore<SafeModeDatabase>,
     pub manager: Arc<RwLock<Rkv<SafeModeEnvironment>>>,
+    pub peer: SingleStore<SafeModeDatabase>,
+    pub user: SingleStore<SafeModeDatabase>,
 }
 
 impl State {
@@ -18,17 +21,31 @@ impl State {
 
         let mut m = Manager::<SafeModeEnvironment>::singleton().write().unwrap();
 
-        let manager = m
+        let created_arc = m
             .get_or_create(data.as_path(), Rkv::new::<SafeMode>)
             .unwrap();
 
-        Self { manager }
-    }
+        let interface = {
+            let env = created_arc.read().unwrap();
+            env.open_single("interface", StoreOptions::create())
+                .unwrap()
+        };
 
-    pub fn get_store(&self) -> SingleStore<SafeModeDatabase> {
-        let env = self.manager.read().unwrap();
+        let peer = {
+            let env = created_arc.read().unwrap();
+            env.open_single("peer", StoreOptions::create()).unwrap()
+        };
 
-        env.open_single("wireguard_manager", StoreOptions::create())
-            .unwrap()
+        let user = {
+            let env = created_arc.read().unwrap();
+            env.open_single("user", StoreOptions::create()).unwrap()
+        };
+
+        Self {
+            interface,
+            manager: created_arc,
+            peer,
+            user,
+        }
     }
 }

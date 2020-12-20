@@ -1,8 +1,9 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Interface {
-    pub id: String,
+    pub id: Uuid,
     pub address: String,
     pub listen_port: u16,
     pub post_down: String,
@@ -10,7 +11,7 @@ pub struct Interface {
     pub save_config: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Peer {
     pub id: String,
     pub address: String,
@@ -20,7 +21,7 @@ pub struct Peer {
     pub user_id: String,
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct User {
     pub id: String,
     pub name: String,
