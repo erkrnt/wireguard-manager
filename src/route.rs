@@ -1,5 +1,5 @@
 use crate::{schema, AppState};
-use actix_web::{get, post, web, Error, HttpResponse};
+use actix_web::{delete, get, post, web, Error, HttpResponse};
 use rkv::Value;
 use serde::Deserialize;
 use uuid::Uuid;
@@ -13,6 +13,11 @@ struct CreateInterfaceParams {
     post_down: String,
     post_up: String,
     save_config: bool,
+}
+
+#[derive(Deserialize)]
+struct DeleteInterfaceParams {
+    id: String,
 }
 
 #[get("/interface")]
@@ -84,4 +89,26 @@ async fn create_interface(
     writer.commit().unwrap();
 
     Ok(HttpResponse::Ok().json(interface))
+}
+
+#[delete("/interface")]
+async fn delete_interface(
+    data: web::Data<AppState>,
+    params: web::Json<DeleteInterfaceParams>,
+) -> Result<HttpResponse, Error> {
+    let id = &params.id;
+
+    let state = &data.state;
+
+    let store = state.interface;
+
+    let env = state.manager.read().unwrap();
+
+    let mut writer = env.write().unwrap();
+
+    store.delete(&mut writer, id.to_string()).unwrap();
+
+    writer.commit().unwrap();
+
+    Ok(HttpResponse::Ok().finish())
 }
