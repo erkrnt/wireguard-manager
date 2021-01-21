@@ -6,6 +6,9 @@ mod route;
 mod schema;
 mod store;
 
+#[cfg(test)]
+mod tests;
+
 use store::State;
 
 pub struct AppState {

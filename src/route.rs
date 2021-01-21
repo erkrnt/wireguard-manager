@@ -1,23 +1,23 @@
 use crate::{schema, AppState};
 use actix_web::{delete, get, post, web, Error, HttpResponse};
 use rkv::Value;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use schema::Interface;
 
-#[derive(Deserialize)]
-struct CreateInterfaceParams {
-    address: String,
-    listen_port: u16,
-    post_down: String,
-    post_up: String,
-    save_config: bool,
+#[derive(Deserialize, Serialize)]
+pub struct CreateInterfaceParams {
+    pub address: String,
+    pub listen_port: u16,
+    pub post_down: String,
+    pub post_up: String,
+    pub save_config: bool,
 }
 
-#[derive(Deserialize)]
-struct DeleteInterfaceParams {
-    id: String,
+#[derive(Deserialize, Serialize)]
+pub struct DeleteInterfaceParams {
+    pub id: String,
 }
 
 #[get("/interface")]
@@ -36,7 +36,6 @@ async fn get_interfaces(data: web::Data<AppState>) -> Result<HttpResponse, Error
         .map(|value| match value {
             Ok((_, Value::Str(serialized))) => {
                 let data: Interface = serde_json::from_str(serialized).unwrap();
-
                 data
             }
             _ => panic!(),
@@ -68,6 +67,8 @@ async fn create_interface(
         save_config: params.save_config,
     };
 
+    let serialized = serde_json::to_string(&interface).unwrap();
+
     let state = &data.state;
 
     let store = state.interface;
@@ -75,8 +76,6 @@ async fn create_interface(
     let env = state.manager.read().unwrap();
 
     let mut writer = env.write().unwrap();
-
-    let serialized = serde_json::to_string(&interface).unwrap();
 
     store
         .put(
